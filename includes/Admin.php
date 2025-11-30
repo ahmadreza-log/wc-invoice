@@ -316,10 +316,18 @@ class Admin
             <label class="wc-invoice-label">
                 <?php esc_html_e('Primary Color', 'wc-invoice'); ?>
             </label>
-            <input type="color" 
-                   name="wc_invoice_settings[primary_color]" 
-                   value="<?php echo esc_attr($options['primary_color'] ?? '#667eea'); ?>" 
-                   class="wc-invoice-color-picker" />
+            <div class="wc-invoice-color-picker-wrapper">
+                <input type="color" 
+                       name="wc_invoice_settings[primary_color]" 
+                       id="wc_invoice_primary_color" 
+                       value="<?php echo esc_attr($options['primary_color'] ?? '#667eea'); ?>" 
+                       class="wc-invoice-color-picker" />
+                <input type="text" 
+                       id="wc_invoice_primary_color_value" 
+                       value="<?php echo esc_attr($options['primary_color'] ?? '#667eea'); ?>" 
+                       class="wc-invoice-color-value" 
+                       readonly />
+            </div>
             <p class="wc-invoice-description"><?php esc_html_e('Primary color used in the invoice theme.', 'wc-invoice'); ?></p>
         </div>
 
@@ -327,10 +335,18 @@ class Admin
             <label class="wc-invoice-label">
                 <?php esc_html_e('Text Color', 'wc-invoice'); ?>
             </label>
-            <input type="color" 
-                   name="wc_invoice_settings[text_color]" 
-                   value="<?php echo esc_attr($options['text_color'] ?? '#2d3748'); ?>" 
-                   class="wc-invoice-color-picker" />
+            <div class="wc-invoice-color-picker-wrapper">
+                <input type="color" 
+                       name="wc_invoice_settings[text_color]" 
+                       id="wc_invoice_text_color" 
+                       value="<?php echo esc_attr($options['text_color'] ?? '#2d3748'); ?>" 
+                       class="wc-invoice-color-picker" />
+                <input type="text" 
+                       id="wc_invoice_text_color_value" 
+                       value="<?php echo esc_attr($options['text_color'] ?? '#2d3748'); ?>" 
+                       class="wc-invoice-color-value" 
+                       readonly />
+            </div>
             <p class="wc-invoice-description"><?php esc_html_e('Main text color for invoice content.', 'wc-invoice'); ?></p>
         </div>
 

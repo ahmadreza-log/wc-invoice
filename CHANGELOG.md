@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 2024-01-01
+
+### Changed
+- 🎨 Enhanced color picker design with Glassmorphism
+- ✨ Added color value display next to picker
+- 💫 Smooth hover animations for color picker
+- 🎯 Better visual feedback on color selection
+- 📱 Improved color picker wrapper styling
+
+### Added
+- 📝 Color value text input (readonly, displays hex value)
+- 🔄 Sync between color picker and value display
+- ✅ Manual color value input support
+
 ## [0.0.6] - 2024-01-01
 
 ### Added

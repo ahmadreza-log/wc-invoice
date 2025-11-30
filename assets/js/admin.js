@@ -208,6 +208,29 @@
             $('#wc_invoice_font_' + format + '_id').val('');
             $(this).closest('.wc-invoice-font-preview').remove();
         });
+
+        // Color picker sync
+        $('#wc_invoice_primary_color').on('input change', function() {
+            $('#wc_invoice_primary_color_value').val($(this).val());
+        });
+
+        $('#wc_invoice_text_color').on('input change', function() {
+            $('#wc_invoice_text_color_value').val($(this).val());
+        });
+
+        // Allow manual color value input
+        $('#wc_invoice_primary_color_value, #wc_invoice_text_color_value').on('input', function() {
+            const value = $(this).val();
+            const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+            
+            if (colorRegex.test(value)) {
+                if ($(this).attr('id') === 'wc_invoice_primary_color_value') {
+                    $('#wc_invoice_primary_color').val(value);
+                } else {
+                    $('#wc_invoice_text_color').val(value);
+                }
+            }
+        });
     });
 })(jQuery);
 
