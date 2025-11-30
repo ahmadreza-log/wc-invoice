@@ -15,7 +15,7 @@ If you discover a security vulnerability, please **DO NOT** open a public issue.
 
 ### 📧 How to Report
 
-1. **Email us directly** at: `security@example.com`
+1. **Email us directly** at: `security@ahmadreza.me`
 2. **Include the following information:**
    - Description of the vulnerability
    - Steps to reproduce

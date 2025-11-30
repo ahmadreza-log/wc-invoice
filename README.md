@@ -6,7 +6,7 @@
 [![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)](https://wordpress.org/)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com/)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-blue.svg)](https://www.php.net/)
-[![Version](https://img.shields.io/badge/Version-0.0.1-blue.svg)](https://github.com/your-username/wc-invoice)
+[![Version](https://img.shields.io/badge/Version-0.0.1-blue.svg)](https://github.com/ahmadreza-log/wc-invoice)
 
 ## 📋 Table of Contents
 
@@ -43,7 +43,7 @@
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/your-username/wc-invoice.git
+git clone https://github.com/ahmadreza-log/wc-invoice.git
 ```
 
 ## 📖 Usage
@@ -145,7 +145,7 @@ See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.
 
 ## 🔒 Security
 
-If you discover any security-related issues, please email security@example.com instead of using the issue tracker.
+If you discover any security-related issues, please email security@ahmadreza.me instead of using the issue tracker.
 
 ## 📄 License
 
@@ -153,10 +153,11 @@ This project is licensed under the GPL v2 or later - see the [LICENSE](LICENSE) 
 
 ## 👤 Author
 
-**Your Name**
+**Ahmadreza Ebrahimi**
 
-- Website: [yourwebsite.com](https://yourwebsite.com)
-- GitHub: [@your-username](https://github.com/your-username)
+- Website: [ahmadreza.me](https://ahmadreza.me)
+- GitHub: [@ahmadreza-log](https://github.com/ahmadreza-log)
+- WordPress: [@ahmad_r3za](https://profiles.wordpress.org/ahmad_r3za/)
 
 ## 🙏 Acknowledgments
 

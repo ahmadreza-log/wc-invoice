@@ -2,11 +2,11 @@
 
 /**
  * Plugin Name: WC Invoice
- * Plugin URI: https://github.com/your-username/wc-invoice
+ * Plugin URI: https://github.com/ahmadreza-log/wc-invoice
  * Description: Professional invoice generator plugin for WooCommerce with PDF and HTML invoice generation capabilities
  * Version: 0.0.1
- * Author: Your Name
- * Author URI: https://yourwebsite.com
+ * Author: Ahmadreza Ebrahimi
+ * Author URI: https://ahmadreza.me
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wc-invoice
