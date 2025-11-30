@@ -411,6 +411,70 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Signature Upload Styles */
+.wc-invoice-signature-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.wc-invoice-signature-preview {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-signature-preview img {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Fields Checkbox List */
+.wc-invoice-fields-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.wc-invoice-checkbox-label:hover {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.wc-invoice-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
+    border-radius: 4px;
+}
+
+.wc-invoice-checkbox-text {
+    font-size: 14px;
+    color: #2d3748;
+    font-weight: 500;
+    user-select: none;
+}
+
 /* Font Upload Styles */
 .wc-invoice-font-uploads {
     display: grid;

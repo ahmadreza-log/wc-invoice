@@ -120,6 +120,32 @@ class Admin
             }
         }
 
+        // Signature
+        if (isset($input['signature_id'])) {
+            $sanitized['signature_id'] = absint($input['signature_id']);
+        }
+
+        // Address
+        if (isset($input['address'])) {
+            $sanitized['address'] = sanitize_textarea_field($input['address']);
+        }
+
+        // Date Format
+        if (isset($input['date_format'])) {
+            $allowed_formats = ['d/m/Y', 'm/d/Y', 'Y-m-d', 'F j, Y', 'j F Y', 'd M Y'];
+            $sanitized['date_format'] = in_array($input['date_format'], $allowed_formats) ? $input['date_format'] : 'd/m/Y';
+        }
+
+        // Fields visibility
+        $fields = ['first_name', 'last_name', 'address', 'email'];
+        foreach ($fields as $field) {
+            if (isset($input['show_field_' . $field])) {
+                $sanitized['show_field_' . $field] = (bool) $input['show_field_' . $field];
+            } else {
+                $sanitized['show_field_' . $field] = false;
+            }
+        }
+
         return $sanitized;
     }
 
@@ -278,6 +304,131 @@ class Admin
                 </button>
             </div>
             <p class="wc-invoice-description"><?php esc_html_e('Upload your company logo to display on invoices.', 'wc-invoice'); ?></p>
+        </div>
+
+        <div class="wc-invoice-form-group">
+            <label class="wc-invoice-label">
+                <?php esc_html_e('Signature', 'wc-invoice'); ?>
+            </label>
+            <div class="wc-invoice-signature-upload">
+                <?php
+                $signature_id = $options['signature_id'] ?? 0;
+                $signature_url = $signature_id ? wp_get_attachment_image_url($signature_id, 'full') : '';
+                ?>
+                <div class="wc-invoice-signature-preview" style="<?php echo $signature_url ? '' : 'display: none;'; ?>">
+                    <img src="<?php echo esc_url($signature_url); ?>" alt="<?php esc_attr_e('Signature', 'wc-invoice'); ?>" style="max-width: 200px; max-height: 100px; margin-bottom: 10px;" />
+                    <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-remove-signature" style="margin-left: 10px;">
+                        <?php esc_html_e('Remove Signature', 'wc-invoice'); ?>
+                    </button>
+                </div>
+                <input type="hidden" name="wc_invoice_settings[signature_id]" id="wc_invoice_signature_id" value="<?php echo esc_attr($signature_id); ?>" />
+                <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-upload-signature">
+                    <span class="wc-invoice-btn-icon">✍️</span>
+                    <?php esc_html_e('Upload Signature', 'wc-invoice'); ?>
+                </button>
+            </div>
+            <p class="wc-invoice-description"><?php esc_html_e('Upload signature image to display on invoices.', 'wc-invoice'); ?></p>
+        </div>
+
+        <div class="wc-invoice-form-group">
+            <label class="wc-invoice-label">
+                <?php esc_html_e('Address', 'wc-invoice'); ?>
+            </label>
+            <?php
+            // Get WooCommerce store address as default
+            $woocommerce_address = '';
+            if (class_exists('WooCommerce') && function_exists('WC')) {
+                $countries = WC()->countries;
+                if ($countries) {
+                    $woocommerce_address = $countries->get_formatted_address([
+                        'address_1' => $countries->get_base_address(),
+                        'address_2' => $countries->get_base_address_2(),
+                        'city' => $countries->get_base_city(),
+                        'state' => $countries->get_base_state(),
+                        'postcode' => $countries->get_base_postcode(),
+                        'country' => $countries->get_base_country(),
+                    ], "\n");
+                }
+            }
+            
+            // Use saved address or WooCommerce address as default
+            $address = !empty($options['address']) ? $options['address'] : $woocommerce_address;
+            ?>
+            <textarea name="wc_invoice_settings[address]" 
+                      class="wc-invoice-textarea" 
+                      rows="4" 
+                      placeholder="<?php esc_attr_e('Enter your business address', 'wc-invoice'); ?>"><?php echo esc_textarea($address); ?></textarea>
+            <p class="wc-invoice-description"><?php esc_html_e('Business address displayed on invoices. Default value is taken from WooCommerce store settings and can be edited here without affecting WooCommerce settings.', 'wc-invoice'); ?></p>
+        </div>
+
+        <div class="wc-invoice-form-group">
+            <label class="wc-invoice-label">
+                <?php esc_html_e('Date Format', 'wc-invoice'); ?>
+            </label>
+            <select name="wc_invoice_settings[date_format]" class="wc-invoice-select">
+                <?php
+                $date_formats = [
+                    'd/m/Y' => date('d/m/Y') . ' (d/m/Y)',
+                    'm/d/Y' => date('m/d/Y') . ' (m/d/Y)',
+                    'Y-m-d' => date('Y-m-d') . ' (Y-m-d)',
+                    'F j, Y' => date('F j, Y') . ' (F j, Y)',
+                    'j F Y' => date('j F Y') . ' (j F Y)',
+                    'd M Y' => date('d M Y') . ' (d M Y)',
+                ];
+                $selected_format = $options['date_format'] ?? 'd/m/Y';
+                foreach ($date_formats as $format => $label):
+                ?>
+                    <option value="<?php echo esc_attr($format); ?>" <?php selected($selected_format, $format); ?>>
+                        <?php echo esc_html($label); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <p class="wc-invoice-description"><?php esc_html_e('Choose how dates are displayed on invoices.', 'wc-invoice'); ?></p>
+        </div>
+
+        <div class="wc-invoice-form-group">
+            <label class="wc-invoice-label">
+                <?php esc_html_e('Fields', 'wc-invoice'); ?>
+            </label>
+            <p class="wc-invoice-description" style="margin-bottom: 15px;"><?php esc_html_e('Select which fields to display on invoices.', 'wc-invoice'); ?></p>
+            
+            <div class="wc-invoice-fields-list">
+                <label class="wc-invoice-checkbox-label">
+                    <input type="checkbox" 
+                           name="wc_invoice_settings[show_field_first_name]" 
+                           value="1" 
+                           <?php checked($options['show_field_first_name'] ?? true, true); ?> 
+                           class="wc-invoice-checkbox" />
+                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('First Name', 'wc-invoice'); ?></span>
+                </label>
+
+                <label class="wc-invoice-checkbox-label">
+                    <input type="checkbox" 
+                           name="wc_invoice_settings[show_field_last_name]" 
+                           value="1" 
+                           <?php checked($options['show_field_last_name'] ?? true, true); ?> 
+                           class="wc-invoice-checkbox" />
+                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('Last Name', 'wc-invoice'); ?></span>
+                </label>
+
+                <label class="wc-invoice-checkbox-label">
+                    <input type="checkbox" 
+                           name="wc_invoice_settings[show_field_address]" 
+                           value="1" 
+                           <?php checked($options['show_field_address'] ?? true, true); ?> 
+                           class="wc-invoice-checkbox" />
+                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('Address', 'wc-invoice'); ?></span>
+                </label>
+
+                <label class="wc-invoice-checkbox-label">
+                    <input type="checkbox" 
+                           name="wc_invoice_settings[show_field_email]" 
+                           value="1" 
+                           <?php checked($options['show_field_email'] ?? true, true); ?> 
+                           class="wc-invoice-checkbox" />
+                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('Email', 'wc-invoice'); ?></span>
+                </label>
+            </div>
         </div>
         <?php
     }

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.9] - 2024-01-01
+
+### Added
+- ✍️ Signature upload field in General settings
+- 📍 Address field with WooCommerce integration
+- 📅 Date format selector (6 formats available)
+- ✅ Fields visibility toggles (First Name, Last Name, Address, Email)
+- 🎨 Checkbox styling for fields list
+- 📝 Signature upload functionality
+
+### Features
+- 🔗 Address automatically populated from WooCommerce store settings
+- ✏️ Address can be edited in plugin settings without affecting WooCommerce
+- 📅 Multiple date format options with preview
+- ✅ Toggle visibility of customer fields on invoices
+- ✍️ Signature image upload and preview
+
 ## [0.0.8] - 2024-01-01
 
 ### Fixed

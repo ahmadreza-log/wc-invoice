@@ -163,6 +163,46 @@
             $('.wc-invoice-logo-preview').hide();
         });
 
+        // Signature upload
+        let signatureFrame;
+        $('.wc-invoice-upload-signature').on('click', function(e) {
+            e.preventDefault();
+
+            if (signatureFrame) {
+                signatureFrame.open();
+                return;
+            }
+
+            signatureFrame = wp.media({
+                title: 'Select Signature',
+                button: {
+                    text: 'Use this signature'
+                },
+                multiple: false,
+                library: {
+                    type: 'image'
+                }
+            });
+
+            signatureFrame.on('select', function() {
+                const attachment = signatureFrame.state().get('selection').first().toJSON();
+                $('#wc_invoice_signature_id').val(attachment.id);
+                
+                const preview = $('.wc-invoice-signature-preview');
+                preview.find('img').attr('src', attachment.url);
+                preview.show();
+            });
+
+            signatureFrame.open();
+        });
+
+        // Remove signature
+        $('.wc-invoice-remove-signature').on('click', function(e) {
+            e.preventDefault();
+            $('#wc_invoice_signature_id').val('');
+            $('.wc-invoice-signature-preview').hide();
+        });
+
         // Font upload
         let fontFrames = {};
         $('.wc-invoice-upload-font').on('click', function(e) {
