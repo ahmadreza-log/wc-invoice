@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.14] - 2024-01-01
+
+### Added
+- 📝 Customer Note field toggle in Fields settings
+- 📋 Order Note field toggle in Fields settings
+
+### Features
+- ✅ Display customer note on invoice
+- ✅ Display order notes on invoice
+- 🎯 Consistent toggle switch design
+- 📝 Descriptive labels for each field
+
 ## [0.0.13] - 2024-01-01
 
 ### Added

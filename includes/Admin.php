@@ -137,7 +137,7 @@ class Admin
         }
 
         // Fields visibility
-        $fields = ['first_name', 'last_name', 'address', 'email', 'phone', 'payment_method', 'transaction_id'];
+        $fields = ['first_name', 'last_name', 'address', 'email', 'phone', 'payment_method', 'transaction_id', 'customer_note', 'order_note'];
         foreach ($fields as $field) {
             if (isset($input['show_field_' . $field])) {
                 $sanitized['show_field_' . $field] = (bool) $input['show_field_' . $field];
@@ -487,6 +487,34 @@ class Admin
                                name="wc_invoice_settings[show_field_transaction_id]" 
                                value="1" 
                                <?php checked($options['show_field_transaction_id'] ?? false, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Customer Note', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer note on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_customer_note]" 
+                               value="1" 
+                               <?php checked($options['show_field_customer_note'] ?? false, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Order Note', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display order notes on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_order_note]" 
+                               value="1" 
+                               <?php checked($options['show_field_order_note'] ?? false, true); ?> />
                         <span class="wc-invoice-switch-slider"></span>
                     </label>
                 </div>
