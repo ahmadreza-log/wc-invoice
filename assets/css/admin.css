@@ -1,0 +1,16 @@
+/**
+ * Admin styles for WC Invoice
+ */
+
+.wc-invoice-meta-box {
+    padding: 10px 0;
+}
+
+.wc-invoice-meta-box p {
+    margin: 10px 0;
+}
+
+.wc-invoice-generate-btn {
+    width: 100%;
+}
+

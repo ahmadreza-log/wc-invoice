@@ -1,0 +1,33 @@
+name: ✅ Version Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check version consistency
+        run: |
+          HEADER_VERSION=$(grep -oP "Version:\s*\K[0-9]+\.[0-9]+\.[0-9]+" wc-invoice.php | head -1)
+          DEFINE_VERSION=$(grep -oP "define\('WC_INVOICE_VERSION', '\K[0-9]+\.[0-9]+\.[0-9]+" wc-invoice.php)
+          
+          echo "Header version: $HEADER_VERSION"
+          echo "Define version: $DEFINE_VERSION"
+          
+          if [ "$HEADER_VERSION" != "$DEFINE_VERSION" ]; then
+            echo "❌ Error: Version mismatch!"
+            echo "Header: $HEADER_VERSION"
+            echo "Define: $DEFINE_VERSION"
+            exit 1
+          fi
+          
+          echo "✅ Version numbers are consistent!"
+
