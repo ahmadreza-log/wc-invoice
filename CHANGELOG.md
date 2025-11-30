@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2024-01-01
+
+### Added
+- 🎨 Modern Glassmorphism design for settings panel
+- 📱 Responsive sidebar navigation
+- 🎯 Tab-based settings organization (General, Invoice, Display, Advanced)
+- ✨ Beautiful gradient header with animations
+- 🔘 Modern toggle switches
+- 💫 Smooth animations and transitions
+- 📝 Enhanced form fields with glassmorphism effect
+- 🎨 Custom CSS textarea for advanced styling
+- 🔄 Reset to defaults functionality
+- ✅ Form validation
+
+### Changed
+- 🎨 Complete redesign of settings page UI
+- 📱 Improved mobile responsiveness
+- 🎯 Better user experience with tab navigation
+- 💎 Enhanced visual design with backdrop filters
+
 ## [0.0.2] - 2024-01-01
 
 ### Added

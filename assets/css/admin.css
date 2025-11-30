@@ -1,7 +1,334 @@
 /**
- * Admin styles for WC Invoice
+ * Admin styles for WC Invoice - Glassmorphism Design
  */
 
+/* Reset and Base Styles */
+.wc-invoice-settings-wrapper {
+    margin: 20px 20px 0 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Header Styles */
+.wc-invoice-settings-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.wc-invoice-settings-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: pulse 15s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(180deg); }
+}
+
+.wc-invoice-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.wc-invoice-title {
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wc-invoice-icon {
+    font-size: 36px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.wc-invoice-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Container Layout */
+.wc-invoice-settings-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Sidebar Styles - Glassmorphism */
+.wc-invoice-sidebar {
+    flex: 0 0 280px;
+    position: sticky;
+    top: 32px;
+}
+
+.wc-invoice-nav {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wc-invoice-nav-item {
+    margin: 0 0 8px 0;
+}
+
+.wc-invoice-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    color: #4a5568;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.wc-invoice-nav-link:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    transform: translateX(4px);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.wc-invoice-nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    border-color: transparent;
+}
+
+.wc-invoice-nav-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.wc-invoice-nav-label {
+    flex: 1;
+}
+
+/* Main Content - Glassmorphism Cards */
+.wc-invoice-main-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.wc-invoice-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.wc-invoice-card-header {
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.wc-invoice-card-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.wc-invoice-card-description {
+    color: #718096;
+    font-size: 14px;
+    margin: 0;
+}
+
+.wc-invoice-card-body {
+    padding: 30px;
+}
+
+/* Form Elements */
+.wc-invoice-form-group {
+    margin-bottom: 28px;
+}
+
+.wc-invoice-label {
+    display: block;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.wc-invoice-label-required {
+    color: #e53e3e;
+    margin-left: 4px;
+}
+
+.wc-invoice-input,
+.wc-invoice-select,
+.wc-invoice-textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    font-size: 14px;
+    color: #2d3748;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.wc-invoice-input:focus,
+.wc-invoice-select:focus,
+.wc-invoice-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.wc-invoice-textarea {
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+}
+
+.wc-invoice-description {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    color: #718096;
+    line-height: 1.5;
+}
+
+/* Toggle Switch */
+.wc-invoice-switch {
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 30px;
+}
+
+.wc-invoice-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.wc-invoice-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e0;
+    transition: 0.4s;
+    border-radius: 30px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.wc-invoice-switch input:checked + .wc-invoice-switch-slider {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.wc-invoice-switch input:checked + .wc-invoice-switch-slider:before {
+    transform: translateX(26px);
+}
+
+/* Buttons */
+.wc-invoice-form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+}
+
+.wc-invoice-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.wc-invoice-btn-secondary {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    color: #4a5568;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wc-invoice-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+}
+
+.wc-invoice-btn-icon {
+    font-size: 18px;
+}
+
+/* Meta Box Styles (for order edit page) */
 .wc-invoice-meta-box {
     padding: 10px 0;
 }
@@ -14,3 +341,50 @@
     width: 100%;
 }
 
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .wc-invoice-settings-container {
+        flex-direction: column;
+    }
+
+    .wc-invoice-sidebar {
+        flex: 1;
+        position: static;
+    }
+
+    .wc-invoice-nav {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    .wc-invoice-nav-list {
+        display: flex;
+        gap: 8px;
+    }
+
+    .wc-invoice-nav-item {
+        margin: 0;
+        flex-shrink: 0;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wc-invoice-tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+/* WordPress Admin Compatibility */
+.wc-invoice-settings-wrapper .notice {
+    margin: 20px 0;
+}
