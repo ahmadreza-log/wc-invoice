@@ -55,22 +55,14 @@ class Addon_Manager
      */
     private function loadAddons(): void
     {
-        $addons_dir = WC_INVOICE_DIR . 'addons';
+        // Allow plugins to register themselves as WC Invoice addons
+        do_action('wc_invoice_register_addons');
         
-        if (!is_dir($addons_dir)) {
-            return;
-        }
-
-        $addon_files = glob($addons_dir . '/*/addon.php');
+        // Get registered addons from other plugins
+        $registered_addons = apply_filters('wc_invoice_registered_addons', []);
         
-        if (!$addon_files) {
-            return;
-        }
-
-        foreach ($addon_files as $addon_file) {
-            $addon_data = $this->getAddonData($addon_file);
-            
-            if (!$addon_data) {
+        foreach ($registered_addons as $addon_data) {
+            if (empty($addon_data['slug']) || empty($addon_data['file'])) {
                 continue;
             }
 
@@ -79,71 +71,76 @@ class Addon_Manager
 
             // Load active addons
             if ($this->isAddonActive($addon_slug)) {
-                $this->loadAddon($addon_file, $addon_data);
+                $this->loadAddonFile($addon_data);
                 $this->active_addons[$addon_slug] = $addon_data;
             }
         }
     }
 
     /**
-     * Get addon data from file header
+     * Register an addon
      *
-     * @param string $file Addon file path
-     * @return array|false Addon data or false on failure
+     * @param string $slug Addon slug (unique identifier)
+     * @param string $file Main plugin file path
+     * @param array $args Addon arguments
+     * @return bool
      */
-    private function getAddonData(string $file)
+    public function registerAddon(string $slug, string $file, array $args = []): bool
     {
-        if (!file_exists($file)) {
+        if (empty($slug) || empty($file) || !file_exists($file)) {
             return false;
         }
 
-        $default_headers = [
-            'Name' => 'Addon Name',
-            'AddonURI' => 'Addon URI',
+        // Get plugin data from file header
+        $plugin_data = get_file_data($file, [
+            'Name' => 'Plugin Name',
+            'PluginURI' => 'Plugin URI',
             'Version' => 'Version',
             'Description' => 'Description',
             'Author' => 'Author',
             'AuthorURI' => 'Author URI',
-            'Requires' => 'Requires',
             'TextDomain' => 'Text Domain',
             'DomainPath' => 'Domain Path',
-        ];
+        ], 'plugin');
 
-        $addon_data = get_file_data($file, $default_headers, 'wc_invoice_addon');
+        // Merge with provided args
+        $addon_data = array_merge([
+            'slug' => $slug,
+            'file' => $file,
+            'name' => $plugin_data['Name'] ?? $args['name'] ?? '',
+            'version' => $plugin_data['Version'] ?? $args['version'] ?? '1.0.0',
+            'description' => $plugin_data['Description'] ?? $args['description'] ?? '',
+            'author' => $plugin_data['Author'] ?? $args['author'] ?? '',
+            'author_uri' => $plugin_data['AuthorURI'] ?? $args['author_uri'] ?? '',
+            'plugin_uri' => $plugin_data['PluginURI'] ?? $args['plugin_uri'] ?? '',
+            'requires' => $args['requires'] ?? '',
+            'text_domain' => $plugin_data['TextDomain'] ?? $args['text_domain'] ?? '',
+        ], $args);
 
-        if (empty($addon_data['Name'])) {
+        if (empty($addon_data['name'])) {
             return false;
         }
 
-        // Extract slug from directory name
-        $dir = dirname($file);
-        $slug = basename($dir);
-
-        $addon_data['slug'] = $slug;
-        $addon_data['file'] = $file;
-        $addon_data['dir'] = $dir;
-        $addon_data['url'] = WC_INVOICE_URL . 'addons/' . $slug;
-
-        return $addon_data;
+        $this->addons[$slug] = $addon_data;
+        return true;
     }
 
     /**
-     * Load addon
+     * Load addon file
      *
-     * @param string $file Addon file path
      * @param array $data Addon data
      * @return void
      */
-    private function loadAddon(string $file, array $data): void
+    private function loadAddonFile(array $data): void
     {
         // Check requirements
-        if (!empty($data['Requires'])) {
-            $required_version = $data['Requires'];
+        if (!empty($data['requires'])) {
+            $required_version = $data['requires'];
             if (version_compare(WC_INVOICE_VERSION, $required_version, '<')) {
                 add_action('admin_notices', function() use ($data, $required_version) {
                     printf(
                         '<div class="notice notice-error"><p><strong>%s</strong>: %s</p></div>',
-                        esc_html($data['Name']),
+                        esc_html($data['name']),
                         sprintf(
                             esc_html__('Requires WC Invoice version %s or higher.', 'wc-invoice'),
                             esc_html($required_version)
@@ -154,10 +151,7 @@ class Addon_Manager
             }
         }
 
-        // Load addon file
-        require_once $file;
-
-        // Fire addon loaded action
+        // Fire addon loaded action (the plugin file should already be loaded by WordPress)
         do_action('wc_invoice_addon_loaded', $data['slug'], $data);
     }
 
@@ -319,41 +313,64 @@ class Addon_Manager
         $all_addons = $this->getAllAddons();
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('WC Invoice Addons', 'wc-invoice'); ?></h1>
-            <p><?php esc_html_e('Extend WC Invoice functionality with addons.', 'wc-invoice'); ?></p>
+            <h1><?php esc_html_e('WC Invoice Extensions', 'wc-invoice'); ?></h1>
+            <p><?php esc_html_e('Extend WC Invoice functionality with third-party plugins. Install and activate extension plugins from the WordPress plugin directory or upload them manually.', 'wc-invoice'); ?></p>
 
-            <div class="wc-invoice-addons-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
-                <?php foreach ($all_addons as $slug => $addon): ?>
-                    <?php $is_active = $this->isAddonActive($slug); ?>
-                    <div class="wc-invoice-addon-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: #fff;">
-                        <h3><?php echo esc_html($addon['Name']); ?></h3>
-                        <p><?php echo esc_html($addon['Description'] ?? ''); ?></p>
-                        <p><strong><?php esc_html_e('Version:', 'wc-invoice'); ?></strong> <?php echo esc_html($addon['Version'] ?? '1.0.0'); ?></p>
-                        <?php if (!empty($addon['Author'])): ?>
-                            <p><strong><?php esc_html_e('Author:', 'wc-invoice'); ?></strong> <?php echo esc_html($addon['Author']); ?></p>
-                        <?php endif; ?>
-                        
-                        <p style="margin-top: 15px;">
-                            <?php if ($is_active): ?>
-                                <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action' => 'deactivate', 'addon' => $slug]), 'wc_invoice_addon_action')); ?>" 
-                                   class="button button-secondary">
-                                    <?php esc_html_e('Deactivate', 'wc-invoice'); ?>
-                                </a>
-                                <span style="color: green; margin-left: 10px;">✓ <?php esc_html_e('Active', 'wc-invoice'); ?></span>
-                            <?php else: ?>
-                                <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action' => 'activate', 'addon' => $slug]), 'wc_invoice_addon_action')); ?>" 
-                                   class="button button-primary">
-                                    <?php esc_html_e('Activate', 'wc-invoice'); ?>
-                                </a>
+            <?php if (empty($all_addons)): ?>
+                <div class="notice notice-info">
+                    <p><strong><?php esc_html_e('No extensions found.', 'wc-invoice'); ?></strong></p>
+                    <p><?php esc_html_e('To create an extension for WC Invoice, create a separate WordPress plugin and register it using the WC Invoice extension API.', 'wc-invoice'); ?></p>
+                    <p><?php esc_html_e('Example:', 'wc-invoice'); ?></p>
+                    <pre style="background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto;"><code>add_action('wc_invoice_register_addons', function() {
+    WC_Invoice\Addon_Manager::instance()->registerAddon(
+        'my-extension-slug',
+        __FILE__,
+        [
+            'name' => 'My Extension',
+            'version' => '1.0.0',
+            'description' => 'Extension description',
+            'author' => 'Your Name',
+            'requires' => '0.0.10'
+        ]
+    );
+});</code></pre>
+                </div>
+            <?php else: ?>
+                <div class="wc-invoice-addons-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <?php foreach ($all_addons as $slug => $addon): ?>
+                        <?php $is_active = $this->isAddonActive($slug); ?>
+                        <div class="wc-invoice-addon-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: #fff;">
+                            <h3><?php echo esc_html($addon['name']); ?></h3>
+                            <p><?php echo esc_html($addon['description'] ?? ''); ?></p>
+                            <p><strong><?php esc_html_e('Version:', 'wc-invoice'); ?></strong> <?php echo esc_html($addon['version'] ?? '1.0.0'); ?></p>
+                            <?php if (!empty($addon['author'])): ?>
+                                <p><strong><?php esc_html_e('Author:', 'wc-invoice'); ?></strong> 
+                                    <?php if (!empty($addon['author_uri'])): ?>
+                                        <a href="<?php echo esc_url($addon['author_uri']); ?>" target="_blank"><?php echo esc_html($addon['author']); ?></a>
+                                    <?php else: ?>
+                                        <?php echo esc_html($addon['author']); ?>
+                                    <?php endif; ?>
+                                </p>
                             <?php endif; ?>
-                        </p>
-                    </div>
-                <?php endforeach; ?>
-
-                <?php if (empty($all_addons)): ?>
-                    <p><?php esc_html_e('No addons found. Addons should be placed in the addons/ directory.', 'wc-invoice'); ?></p>
-                <?php endif; ?>
-            </div>
+                            
+                            <p style="margin-top: 15px;">
+                                <?php if ($is_active): ?>
+                                    <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action' => 'deactivate', 'addon' => $slug]), 'wc_invoice_addon_action')); ?>" 
+                                       class="button button-secondary">
+                                        <?php esc_html_e('Deactivate', 'wc-invoice'); ?>
+                                    </a>
+                                    <span style="color: green; margin-left: 10px;">✓ <?php esc_html_e('Active', 'wc-invoice'); ?></span>
+                                <?php else: ?>
+                                    <a href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action' => 'activate', 'addon' => $slug]), 'wc_invoice_addon_action')); ?>" 
+                                       class="button button-primary">
+                                        <?php esc_html_e('Activate', 'wc-invoice'); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </p>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
         <?php
     }

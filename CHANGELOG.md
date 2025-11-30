@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.11] - 2024-01-01
+
+### Changed
+- 🔄 Completely redesigned extension system (like Elementor)
+- 📦 Extensions are now separate WordPress plugins
+- 🔌 No need to place extensions in addons/ folder
+- 🎯 Extensions register themselves using action hooks
+- 📝 Updated documentation (EXTENSIONS.md)
+
+### Removed
+- 🗑️ Old addons/ directory system
+- 🗑️ Example addon from addons/ folder
+- 🗑️ Old addons/README.md
+
+### Added
+- 📝 EXTENSIONS.md - Complete guide for creating extensions
+- 🔌 Extension registration system via hooks
+- 📦 Support for third-party WordPress plugins as extensions
+
 ## [0.0.10] - 2024-01-01
 
 ### Changed
