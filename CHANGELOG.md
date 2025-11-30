@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.13] - 2024-01-01
+
+### Added
+- 📞 Phone field toggle in Fields settings
+- 💳 Payment Method field toggle in Fields settings
+- 🔢 Transaction ID field toggle in Fields settings
+
+### Features
+- ✅ Three new field visibility options
+- 🎯 Consistent toggle switch design
+- 📝 Descriptive labels for each field
+
 ## [0.0.12] - 2024-01-01
 
 ### Added

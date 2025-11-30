@@ -137,7 +137,7 @@ class Admin
         }
 
         // Fields visibility
-        $fields = ['first_name', 'last_name', 'address', 'email'];
+        $fields = ['first_name', 'last_name', 'address', 'email', 'phone', 'payment_method', 'transaction_id'];
         foreach ($fields as $field) {
             if (isset($input['show_field_' . $field])) {
                 $sanitized['show_field_' . $field] = (bool) $input['show_field_' . $field];
@@ -445,6 +445,48 @@ class Admin
                                name="wc_invoice_settings[show_field_email]" 
                                value="1" 
                                <?php checked($options['show_field_email'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Phone', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer phone number on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_phone]" 
+                               value="1" 
+                               <?php checked($options['show_field_phone'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Payment Method', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display payment method on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_payment_method]" 
+                               value="1" 
+                               <?php checked($options['show_field_payment_method'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Transaction ID', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display transaction ID on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_transaction_id]" 
+                               value="1" 
+                               <?php checked($options['show_field_transaction_id'] ?? false, true); ?> />
                         <span class="wc-invoice-switch-slider"></span>
                     </label>
                 </div>
