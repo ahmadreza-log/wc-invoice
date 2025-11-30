@@ -62,6 +62,8 @@ class Enqueue
             WC_INVOICE_VERSION
         );
 
+        wp_enqueue_media(); // For media uploader
+
         wp_enqueue_script(
             'wc-invoice-admin',
             WC_INVOICE_URL . 'assets/js/admin.js',

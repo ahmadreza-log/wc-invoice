@@ -122,6 +122,92 @@
                 scrollTop: $('.wc-invoice-settings-wrapper').offset().top - 20
             }, 300);
         });
+
+        // Logo upload
+        let logoFrame;
+        $('.wc-invoice-upload-logo').on('click', function(e) {
+            e.preventDefault();
+
+            if (logoFrame) {
+                logoFrame.open();
+                return;
+            }
+
+            logoFrame = wp.media({
+                title: 'Select Logo',
+                button: {
+                    text: 'Use this logo'
+                },
+                multiple: false,
+                library: {
+                    type: 'image'
+                }
+            });
+
+            logoFrame.on('select', function() {
+                const attachment = logoFrame.state().get('selection').first().toJSON();
+                $('#wc_invoice_logo_id').val(attachment.id);
+                
+                const preview = $('.wc-invoice-logo-preview');
+                preview.find('img').attr('src', attachment.url);
+                preview.show();
+            });
+
+            logoFrame.open();
+        });
+
+        // Remove logo
+        $('.wc-invoice-remove-logo').on('click', function(e) {
+            e.preventDefault();
+            $('#wc_invoice_logo_id').val('');
+            $('.wc-invoice-logo-preview').hide();
+        });
+
+        // Font upload
+        let fontFrames = {};
+        $('.wc-invoice-upload-font').on('click', function(e) {
+            e.preventDefault();
+            const format = $(this).data('format');
+            const accept = $(this).data('accept');
+
+            if (fontFrames[format]) {
+                fontFrames[format].open();
+                return;
+            }
+
+            fontFrames[format] = wp.media({
+                title: 'Select ' + format.toUpperCase() + ' Font',
+                button: {
+                    text: 'Use this font'
+                },
+                multiple: false,
+                library: {
+                    type: 'application'
+                }
+            });
+
+            fontFrames[format].on('select', function() {
+                const attachment = fontFrames[format].state().get('selection').first().toJSON();
+                $('#wc_invoice_font_' + format + '_id').val(attachment.id);
+                
+                const wrapper = $(this.el).closest('.wc-invoice-font-upload-wrapper');
+                if (!wrapper.find('.wc-invoice-font-preview').length) {
+                    wrapper.prepend('<div class="wc-invoice-font-preview"><span class="wc-invoice-font-name">' + attachment.filename + '</span><button type="button" class="wc-invoice-btn-remove-font" data-format="' + format + '">Remove</button></div>');
+                } else {
+                    wrapper.find('.wc-invoice-font-name').text(attachment.filename);
+                }
+            });
+
+            fontFrames[format].open();
+        });
+
+        // Remove font
+        $(document).on('click', '.wc-invoice-btn-remove-font', function(e) {
+            e.preventDefault();
+            const format = $(this).data('format');
+            $('#wc_invoice_font_' + format + '_id').val('');
+            $(this).closest('.wc-invoice-font-preview').remove();
+        });
     });
 })(jQuery);
 

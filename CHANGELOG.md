@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2024-01-01
+
+### Added
+- 📝 New settings structure with General and Theme tabs
+- 🎨 Theme selection (Modern, Flat, Simple, Classic)
+- 🎨 Primary color picker
+- 🎨 Text color picker
+- 📷 Logo upload functionality with preview
+- 🔤 Font upload for TTF, WOFF, WOFF2, EOT, SVG formats
+- 📝 Title field for invoice customization
+- 🎯 Media uploader integration
+
+### Changed
+- 🔄 Restructured settings menu (General and Theme only)
+- 🗑️ Removed old settings sections (Invoice, Display, Advanced)
+- 📝 Simplified settings organization
+- 🎨 Enhanced form fields with better styling
+
+### Removed
+- 🗑️ Old settings methods (renderGeneralSection, renderInvoicePrefixField, renderInvoiceTemplateField)
+- 🗑️ Unused settings sections
+
 ## [0.0.4] - 2024-01-01
 
 ### Changed
