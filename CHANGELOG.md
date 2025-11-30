@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2024-01-01
+
+### Added
+- 📦 Addon system for extending plugin functionality
+- 🔌 Addon Manager class for managing addons
+- 🎣 Addon API for addon developers
+- 📁 Addon directory structure
+- 📝 Example addon template
+- 🎯 Addon activation/deactivation system
+- 🔄 Addon loading and initialization
+- 📋 Addons management page in admin
+
+### Features
+- ✅ Automatic addon discovery
+- ✅ Version requirement checking
+- ✅ Addon activation/deactivation
+- ✅ Hook system for addons
+- ✅ API methods for addon integration
+- ✅ Example addon for reference
+
 ## [0.0.5] - 2024-01-01
 
 ### Added
