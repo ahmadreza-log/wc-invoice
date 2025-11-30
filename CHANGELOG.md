@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.12] - 2024-01-01
+
+### Added
+- 🌐 Frontend invoice viewing page
+- 🔗 Custom rewrite endpoint for invoice URLs (`/wc-invoice/{id}/`)
+- 🔘 View Invoice button in orders list and meta box
+- 🔒 Permission checking for invoice access
+- 👤 Customer can view their own invoices
+- 👨‍💼 Admin can view all invoices
+
+### Features
+- ✅ Frontend invoice display (not in wp-admin)
+- 🔗 Clean URLs: `/wc-invoice/123/`
+- 🔒 Secure access control
+- 👤 Customer access to own invoices
+- 👨‍💼 Admin access to all invoices
+- 🎯 Filterable permissions
+
 ## [0.0.11] - 2024-01-01
 
 ### Changed

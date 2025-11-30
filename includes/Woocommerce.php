@@ -150,7 +150,8 @@ class Woocommerce
         $invoice = Database::instance()->getInvoiceByOrderId($order_id);
 
         if ($invoice) {
-            echo '<a href="#" class="button button-small">' . esc_html__('View Invoice', 'wc-invoice') . '</a>';
+            $invoice_url = Frontend::getInvoiceUrl($invoice->id);
+            echo '<a href="' . esc_url($invoice_url) . '" target="_blank" class="button button-small">' . esc_html__('View Invoice', 'wc-invoice') . '</a>';
         } else {
             echo '<span class="na">—</span>';
         }
@@ -208,6 +209,7 @@ class Woocommerce
         $invoice = Database::instance()->getInvoiceByOrderId($order_id);
 
         if ($invoice) {
+            $invoice_url = Frontend::getInvoiceUrl($invoice->id);
             ?>
             <div class="wc-invoice-meta-box">
                 <p>
@@ -219,7 +221,9 @@ class Woocommerce
                     <?php echo esc_html(date_i18n(get_option('date_format'), strtotime($invoice->invoice_date))); ?>
                 </p>
                 <p>
-                    <a href="#" class="button button-primary"><?php esc_html_e('Download Invoice', 'wc-invoice'); ?></a>
+                    <a href="<?php echo esc_url($invoice_url); ?>" target="_blank" class="button button-primary">
+                        <?php esc_html_e('View Invoice', 'wc-invoice'); ?>
+                    </a>
                 </p>
             </div>
             <?php
