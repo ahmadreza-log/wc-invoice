@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.8] - 2024-01-01
+
+### Fixed
+- 🐛 Fixed input styles not applying due to WordPress admin CSS override
+- ✅ Added higher CSS specificity with !important rules
+- 🎯 Added inline styles to ensure styles are applied
+- 🔧 Improved CSS selector specificity
+- 📱 Fixed backdrop-filter browser compatibility
+
+### Changed
+- 🔄 Enhanced CSS loading with inline styles
+- ✅ Better style override protection
+
 ## [0.0.7] - 2024-01-01
 
 ### Changed
