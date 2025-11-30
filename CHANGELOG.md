@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2024-01-01
+
+### Added
+- ✅ HPOS (High-Performance Order Storage) compatibility
+- 🔄 Support for both HPOS and legacy custom post type order storage
+- 🎯 Automatic detection of order storage type
+- 📦 HPOS compatibility declaration
+
+### Changed
+- 🔧 Refactored order column rendering for HPOS compatibility
+- 🔧 Refactored meta box rendering for HPOS compatibility
+- 📝 Improved code structure with shared methods
+
+### Fixed
+- 🐛 Fixed compatibility issues with WooCommerce HPOS feature
+- 🔧 Fixed order column display in HPOS mode
+- 🔧 Fixed meta box display in HPOS mode
+
 ## [0.0.1] - 2024-01-01
 
 ### Added

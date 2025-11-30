@@ -4,7 +4,7 @@
  * Plugin Name: WC Invoice
  * Plugin URI: https://github.com/ahmadreza-log/wc-invoice
  * Description: Professional invoice generator plugin for WooCommerce with PDF and HTML invoice generation capabilities
- * Version: 0.0.1
+ * Version: 0.0.2
  * Author: Ahmadreza Ebrahimi
  * Author URI: https://ahmadreza.me
  * License: GPL v2 or later
@@ -30,7 +30,7 @@ use WC_Invoice\Woocommerce;
 use WC_Invoice\Generator;
 
 // Define plugin constants
-define('WC_INVOICE_VERSION', '0.0.1');
+define('WC_INVOICE_VERSION', '0.0.2');
 define('WC_INVOICE_FILE', __FILE__);
 define('WC_INVOICE_DIR', plugin_dir_path(WC_INVOICE_FILE));
 define('WC_INVOICE_URL', plugin_dir_url(WC_INVOICE_FILE));
@@ -159,8 +159,25 @@ class WC_Invoice
             return;
         }
 
+        // Declare HPOS compatibility
+        $this->declareHPOSCompatibility();
+
         Woocommerce::instance();
         Generator::instance();
+    }
+
+    /**
+     * Declare HPOS (High-Performance Order Storage) compatibility
+     *
+     * @return void
+     */
+    private function declareHPOSCompatibility(): void
+    {
+        add_action('before_woocommerce_init', function () {
+            if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+                \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', WC_INVOICE_FILE, true);
+            }
+        });
     }
 
     /**
