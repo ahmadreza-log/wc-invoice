@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'chore: bump version')"
     
+    permissions:
+      contents: write
+      pull-requests: read
+    
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -74,11 +78,11 @@ jobs:
           git config --local user.name "GitHub Action"
           git add wc-invoice.php CHANGELOG.md
           git commit -m "chore: bump version to ${{ steps.bump_version.outputs.new_version }}" || exit 0
-          git push
+          git push origin HEAD:${{ github.ref }}
 
       - name: 🏷️ Create git tag
         run: |
           NEW_VERSION="${{ steps.bump_version.outputs.new_version }}"
           git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
-          git push origin "v$NEW_VERSION"
+          git push origin "v$NEW_VERSION" || echo "Tag may already exist"
 

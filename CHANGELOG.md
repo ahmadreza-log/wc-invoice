@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.15] - 2024-01-01
+
+### Fixed
+- 🔧 Fixed GitHub Actions permission error for auto version bumping
+- ✅ Added proper permissions to workflow
+- 🔒 Fixed git push command to use correct branch reference
+
+### Changed
+- 🔄 Improved workflow reliability
+- 🎯 Better error handling for tag creation
+
 ## [0.0.14] - 2024-01-01
 
 ### Added
