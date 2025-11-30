@@ -433,11 +433,11 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Fields Checkbox List */
+/* Fields Switcher List */
 .wc-invoice-fields-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
     padding: 20px;
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
@@ -446,33 +446,45 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.wc-invoice-checkbox-label {
+.wc-invoice-field-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 8px;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
-.wc-invoice-checkbox-label:hover {
-    background: rgba(102, 126, 234, 0.05);
+.wc-invoice-field-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(102, 126, 234, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
 }
 
-.wc-invoice-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    accent-color: #667eea;
-    border-radius: 4px;
+.wc-invoice-field-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
 }
 
-.wc-invoice-checkbox-text {
-    font-size: 14px;
+.wc-invoice-field-label {
+    font-size: 15px;
+    font-weight: 600;
     color: #2d3748;
-    font-weight: 500;
-    user-select: none;
+    line-height: 1.4;
+}
+
+.wc-invoice-field-description {
+    font-size: 13px;
+    color: #718096;
+    line-height: 1.4;
 }
 
 /* Font Upload Styles */

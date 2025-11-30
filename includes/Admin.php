@@ -393,41 +393,61 @@ class Admin
             <p class="wc-invoice-description" style="margin-bottom: 15px;"><?php esc_html_e('Select which fields to display on invoices.', 'wc-invoice'); ?></p>
             
             <div class="wc-invoice-fields-list">
-                <label class="wc-invoice-checkbox-label">
-                    <input type="checkbox" 
-                           name="wc_invoice_settings[show_field_first_name]" 
-                           value="1" 
-                           <?php checked($options['show_field_first_name'] ?? true, true); ?> 
-                           class="wc-invoice-checkbox" />
-                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('First Name', 'wc-invoice'); ?></span>
-                </label>
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('First Name', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer first name on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_first_name]" 
+                               value="1" 
+                               <?php checked($options['show_field_first_name'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
 
-                <label class="wc-invoice-checkbox-label">
-                    <input type="checkbox" 
-                           name="wc_invoice_settings[show_field_last_name]" 
-                           value="1" 
-                           <?php checked($options['show_field_last_name'] ?? true, true); ?> 
-                           class="wc-invoice-checkbox" />
-                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('Last Name', 'wc-invoice'); ?></span>
-                </label>
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Last Name', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer last name on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_last_name]" 
+                               value="1" 
+                               <?php checked($options['show_field_last_name'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
 
-                <label class="wc-invoice-checkbox-label">
-                    <input type="checkbox" 
-                           name="wc_invoice_settings[show_field_address]" 
-                           value="1" 
-                           <?php checked($options['show_field_address'] ?? true, true); ?> 
-                           class="wc-invoice-checkbox" />
-                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('Address', 'wc-invoice'); ?></span>
-                </label>
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Address', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer address on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_address]" 
+                               value="1" 
+                               <?php checked($options['show_field_address'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
 
-                <label class="wc-invoice-checkbox-label">
-                    <input type="checkbox" 
-                           name="wc_invoice_settings[show_field_email]" 
-                           value="1" 
-                           <?php checked($options['show_field_email'] ?? true, true); ?> 
-                           class="wc-invoice-checkbox" />
-                    <span class="wc-invoice-checkbox-text"><?php esc_html_e('Email', 'wc-invoice'); ?></span>
-                </label>
+                <div class="wc-invoice-field-item">
+                    <div class="wc-invoice-field-info">
+                        <span class="wc-invoice-field-label"><?php esc_html_e('Email', 'wc-invoice'); ?></span>
+                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer email on invoice', 'wc-invoice'); ?></span>
+                    </div>
+                    <label class="wc-invoice-switch">
+                        <input type="checkbox" 
+                               name="wc_invoice_settings[show_field_email]" 
+                               value="1" 
+                               <?php checked($options['show_field_email'] ?? true, true); ?> />
+                        <span class="wc-invoice-switch-slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
         <?php

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.10] - 2024-01-01
+
+### Changed
+- 🔄 Converted Fields checkboxes to toggle switches
+- 🎨 Enhanced Fields list design with better layout
+- ✨ Added field descriptions for each toggle
+- 💎 Improved hover effects on field items
+- 🎯 Better visual feedback with switcher animations
+
+### Improved
+- 📱 Better mobile-friendly toggle switches
+- 🎨 Glassmorphism styling for field items
+- ✨ Smooth transitions and animations
+- 💫 Enhanced user experience
+
 ## [0.0.9] - 2024-01-01
 
 ### Added
