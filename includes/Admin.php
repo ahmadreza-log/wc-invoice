@@ -50,20 +50,11 @@ class Admin
      */
     public function addAdminMenu(): void
     {
-        add_menu_page(
-            __('WC Invoice', 'wc-invoice'),
-            __('WC Invoice', 'wc-invoice'),
-            'manage_options',
-            'wc-invoice',
-            [$this, 'renderDashboardPage'],
-            'dashicons-media-document',
-            56
-        );
-
+        // Add submenu to WooCommerce admin menu
         add_submenu_page(
-            'wc-invoice',
-            __('Settings', 'wc-invoice'),
-            __('Settings', 'wc-invoice'),
+            'woocommerce',
+            __('WC Invoice Settings', 'wc-invoice'),
+            __('Invoice Settings', 'wc-invoice'),
             'manage_options',
             'wc-invoice-settings',
             [$this, 'renderSettingsPage']
@@ -101,21 +92,6 @@ class Admin
             'wc-invoice-settings',
             'wc_invoice_general_section'
         );
-    }
-
-    /**
-     * Render dashboard page
-     *
-     * @return void
-     */
-    public function renderDashboardPage(): void
-    {
-        ?>
-        <div class="wrap">
-            <h1><?php esc_html_e('WC Invoice Dashboard', 'wc-invoice'); ?></h1>
-            <p><?php esc_html_e('Welcome to WC Invoice plugin dashboard.', 'wc-invoice'); ?></p>
-        </div>
-        <?php
     }
 
     /**

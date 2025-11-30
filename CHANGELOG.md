@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2024-01-01
+
+### Changed
+- 🔄 Moved settings page to WooCommerce admin submenu
+- 🗑️ Removed standalone dashboard page
+- 📍 Settings now accessible from WooCommerce → Invoice Settings
+- 🎯 Simplified menu structure (single settings page)
+
+### Removed
+- 🗑️ Dashboard page (no longer needed)
+
 ## [0.0.3] - 2024-01-01
 
 ### Added
