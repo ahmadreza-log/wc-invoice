@@ -2,6 +2,10 @@
 
 namespace WC_Invoice;
 
+use WC_Invoice\Admin\Framework;
+use WC_Invoice\Admin\Config;
+use WC_Invoice\Admin\Render;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -10,6 +14,7 @@ defined('ABSPATH') || exit;
 class Admin
 {
     private static $instance = null;
+    private Framework $framework;
 
     /**
      * Get instance
@@ -29,7 +34,20 @@ class Admin
      */
     private function __construct()
     {
+        $this->initFramework();
         $this->hooks();
+    }
+
+    /**
+     * Initialize settings framework
+     *
+     * @return void
+     */
+    private function initFramework(): void
+    {
+        $this->framework = Framework::instance();
+        $config = Config::getConfig();
+        $this->framework->init($config);
     }
 
     /**
@@ -40,7 +58,9 @@ class Admin
     private function hooks(): void
     {
         add_action('admin_menu', [$this, 'addAdminMenu']);
-        add_action('admin_init', [$this, 'registerSettings']);
+        
+        // Allow modification of admin hooks
+        do_action('wc_invoice_admin_hooks', $this);
     }
 
     /**
@@ -50,103 +70,23 @@ class Admin
      */
     public function addAdminMenu(): void
     {
+        $page_title = apply_filters('wc_invoice_admin_page_title', __('WC Invoice Settings', 'wc-invoice'));
+        $menu_title = apply_filters('wc_invoice_admin_menu_title', __('Invoice Settings', 'wc-invoice'));
+        $capability = apply_filters('wc_invoice_admin_capability', 'manage_options');
+        $menu_slug = apply_filters('wc_invoice_admin_menu_slug', 'wc-invoice-settings');
+        
         // Add submenu to WooCommerce admin menu
         add_submenu_page(
             'woocommerce',
-            __('WC Invoice Settings', 'wc-invoice'),
-            __('Invoice Settings', 'wc-invoice'),
-            'manage_options',
-            'wc-invoice-settings',
+            $page_title,
+            $menu_title,
+            $capability,
+            $menu_slug,
             [$this, 'renderSettingsPage']
         );
-    }
 
-    /**
-     * Register settings
-     *
-     * @return void
-     */
-    public function registerSettings(): void
-    {
-        register_setting('wc_invoice_settings', 'wc_invoice_settings', [
-            'sanitize_callback' => [$this, 'sanitizeSettings'],
-        ]);
-    }
-
-    /**
-     * Sanitize settings
-     *
-     * @param array $input Raw input data
-     * @return array Sanitized data
-     */
-    public function sanitizeSettings(array $input): array
-    {
-        $sanitized = [];
-
-        // Invoice prefix
-        if (isset($input['invoice_prefix'])) {
-            $sanitized['invoice_prefix'] = sanitize_text_field($input['invoice_prefix']);
-        }
-
-        // Title
-        if (isset($input['title'])) {
-            $sanitized['title'] = sanitize_text_field($input['title']);
-        }
-
-        // Logo ID
-        if (isset($input['logo_id'])) {
-            $sanitized['logo_id'] = absint($input['logo_id']);
-        }
-
-        // Theme
-        if (isset($input['theme'])) {
-            $allowed_themes = ['modern', 'flat', 'simple', 'classic'];
-            $sanitized['theme'] = in_array($input['theme'], $allowed_themes) ? $input['theme'] : 'modern';
-        }
-
-        // Colors
-        if (isset($input['primary_color'])) {
-            $sanitized['primary_color'] = sanitize_hex_color($input['primary_color']);
-        }
-        if (isset($input['text_color'])) {
-            $sanitized['text_color'] = sanitize_hex_color($input['text_color']);
-        }
-
-        // Font IDs
-        $font_formats = ['ttf', 'woff', 'woff2', 'eot', 'svg'];
-        foreach ($font_formats as $format) {
-            if (isset($input['font_' . $format . '_id'])) {
-                $sanitized['font_' . $format . '_id'] = absint($input['font_' . $format . '_id']);
-            }
-        }
-
-        // Signature
-        if (isset($input['signature_id'])) {
-            $sanitized['signature_id'] = absint($input['signature_id']);
-        }
-
-        // Address
-        if (isset($input['address'])) {
-            $sanitized['address'] = sanitize_textarea_field($input['address']);
-        }
-
-        // Date Format
-        if (isset($input['date_format'])) {
-            $allowed_formats = ['d/m/Y', 'm/d/Y', 'Y-m-d', 'F j, Y', 'j F Y', 'd M Y'];
-            $sanitized['date_format'] = in_array($input['date_format'], $allowed_formats) ? $input['date_format'] : 'd/m/Y';
-        }
-
-        // Fields visibility
-        $fields = ['first_name', 'last_name', 'address', 'email', 'phone', 'payment_method', 'transaction_id', 'customer_note', 'order_note'];
-        foreach ($fields as $field) {
-            if (isset($input['show_field_' . $field])) {
-                $sanitized['show_field_' . $field] = (bool) $input['show_field_' . $field];
-            } else {
-                $sanitized['show_field_' . $field] = false;
-            }
-        }
-
-        return $sanitized;
+        // Allow modification after menu is added
+        do_action('wc_invoice_admin_menu_added', $menu_slug);
     }
 
     /**
@@ -157,19 +97,21 @@ class Admin
     public function renderSettingsPage(): void
     {
         $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'general';
-        $tabs = [
-            'general' => __('General', 'wc-invoice'),
-            'theme' => __('Theme', 'wc-invoice'),
-        ];
+        $tabs = $this->framework->getTabs();
+        $options = $this->framework->getSettings();
+        $option_name = $this->framework->getOptionName();
+
+        // Allow modification before rendering
+        do_action('wc_invoice_settings_page_before_render', $active_tab, $tabs, $options);
         ?>
         <div class="wc-invoice-settings-wrapper">
             <div class="wc-invoice-settings-header">
                 <div class="wc-invoice-header-content">
                     <h1 class="wc-invoice-title">
                         <span class="wc-invoice-icon">🧾</span>
-                        <?php esc_html_e('WC Invoice Settings', 'wc-invoice'); ?>
+                        <?php echo esc_html(apply_filters('wc_invoice_settings_page_title', __('WC Invoice Settings', 'wc-invoice'))); ?>
                     </h1>
-                    <p class="wc-invoice-subtitle"><?php esc_html_e('Configure your invoice settings with ease', 'wc-invoice'); ?></p>
+                    <p class="wc-invoice-subtitle"><?php echo esc_html(apply_filters('wc_invoice_settings_page_subtitle', __('Configure your invoice settings with ease', 'wc-invoice'))); ?></p>
                 </div>
             </div>
 
@@ -177,21 +119,15 @@ class Admin
                 <aside class="wc-invoice-sidebar">
                     <nav class="wc-invoice-nav">
                         <ul class="wc-invoice-nav-list">
-                            <?php foreach ($tabs as $tab_key => $tab_label): ?>
+                            <?php foreach ($tabs as $tab_key => $tab_config): ?>
                                 <li class="wc-invoice-nav-item">
                                     <a href="?page=wc-invoice-settings&tab=<?php echo esc_attr($tab_key); ?>" 
                                        class="wc-invoice-nav-link <?php echo $active_tab === $tab_key ? 'active' : ''; ?>"
                                        data-tab="<?php echo esc_attr($tab_key); ?>">
                                         <span class="wc-invoice-nav-icon">
-                                            <?php
-                                            $icons = [
-                                                'general' => '⚙️',
-                                                'theme' => '🎨',
-                                            ];
-                                            echo $icons[$tab_key] ?? '📋';
-                                            ?>
+                                            <?php echo esc_html($tab_config['icon'] ?? '📋'); ?>
                                         </span>
-                                        <span class="wc-invoice-nav-label"><?php echo esc_html($tab_label); ?></span>
+                                        <span class="wc-invoice-nav-label"><?php echo esc_html($tab_config['title']); ?></span>
                                     </a>
                                 </li>
                             <?php endforeach; ?>
@@ -202,464 +138,82 @@ class Admin
                 <main class="wc-invoice-main-content">
                     <form method="post" action="options.php" class="wc-invoice-settings-form">
                         <?php
-                        settings_fields('wc_invoice_settings');
+                        settings_fields($this->framework->getOptionGroup());
                         wp_nonce_field('wc_invoice_settings', 'wc_invoice_settings_nonce');
+                        
+                        // Allow modification of form before fields
+                        do_action('wc_invoice_settings_form_before_fields', $active_tab);
                         ?>
 
-                        <div class="wc-invoice-tab-content" data-tab="general" style="<?php echo $active_tab === 'general' ? 'display: block;' : 'display: none;'; ?>">
-                            <div class="wc-invoice-card">
-                                <div class="wc-invoice-card-header">
-                                    <h2 class="wc-invoice-card-title"><?php esc_html_e('General Settings', 'wc-invoice'); ?></h2>
-                                    <p class="wc-invoice-card-description"><?php esc_html_e('Configure basic invoice settings', 'wc-invoice'); ?></p>
-                                </div>
-                                <div class="wc-invoice-card-body">
-                                    <?php $this->renderGeneralSettings(); ?>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="wc-invoice-tab-content" data-tab="theme" style="<?php echo $active_tab === 'theme' ? 'display: block;' : 'display: none;'; ?>">
-                            <div class="wc-invoice-card">
-                                <div class="wc-invoice-card-header">
-                                    <h2 class="wc-invoice-card-title"><?php esc_html_e('Theme Settings', 'wc-invoice'); ?></h2>
-                                    <p class="wc-invoice-card-description"><?php esc_html_e('Customize invoice appearance and styling', 'wc-invoice'); ?></p>
-                                </div>
-                                <div class="wc-invoice-card-body">
-                                    <?php $this->renderThemeSettings(); ?>
+                        <?php foreach ($tabs as $tab_key => $tab_config): ?>
+                            <div class="wc-invoice-tab-content" 
+                                 data-tab="<?php echo esc_attr($tab_key); ?>" 
+                                 style="<?php echo $active_tab === $tab_key ? 'display: block;' : 'display: none;'; ?>">
+                                <div class="wc-invoice-card">
+                                    <div class="wc-invoice-card-header">
+                                        <h2 class="wc-invoice-card-title"><?php echo esc_html($tab_config['title']); ?></h2>
+                                        <?php if (isset($tab_config['description'])): ?>
+                                            <p class="wc-invoice-card-description"><?php echo esc_html($tab_config['description']); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="wc-invoice-card-body">
+                                        <?php $this->renderTabFields($tab_key, $options, $option_name); ?>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php endforeach; ?>
 
                         <div class="wc-invoice-form-actions">
+                            <?php
+                            // Allow modification of form actions
+                            do_action('wc_invoice_settings_form_actions_before', $options);
+                            ?>
                             <button type="submit" class="wc-invoice-btn wc-invoice-btn-primary">
                                 <span class="wc-invoice-btn-icon">💾</span>
-                                <?php esc_html_e('Save Settings', 'wc-invoice'); ?>
+                                <?php echo esc_html(apply_filters('wc_invoice_settings_save_button_text', __('Save Settings', 'wc-invoice'))); ?>
                             </button>
                             <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary" id="wc-invoice-reset-settings">
                                 <span class="wc-invoice-btn-icon">🔄</span>
-                                <?php esc_html_e('Reset to Defaults', 'wc-invoice'); ?>
+                                <?php echo esc_html(apply_filters('wc_invoice_settings_reset_button_text', __('Reset to Defaults', 'wc-invoice'))); ?>
                             </button>
+                            <?php
+                            // Allow modification of form actions
+                            do_action('wc_invoice_settings_form_actions_after', $options);
+                            ?>
                         </div>
                     </form>
                 </main>
             </div>
         </div>
         <?php
+        // Allow modification after rendering
+        do_action('wc_invoice_settings_page_after_render', $active_tab, $tabs, $options);
     }
 
     /**
-     * Render general settings
+     * Render fields for a specific tab
      *
+     * @param string $tab_id Tab ID
+     * @param array $options Current options
+     * @param string $option_name Option name
      * @return void
      */
-    private function renderGeneralSettings(): void
+    private function renderTabFields(string $tab_id, array $options, string $option_name): void
     {
-        $options = get_option('wc_invoice_settings', []);
-        ?>
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Invoice Prefix', 'wc-invoice'); ?>
-                <span class="wc-invoice-label-required">*</span>
-            </label>
-            <input type="text" 
-                   name="wc_invoice_settings[invoice_prefix]" 
-                   value="<?php echo esc_attr($options['invoice_prefix'] ?? 'INV-'); ?>" 
-                   class="wc-invoice-input" 
-                   placeholder="INV-" 
-                   required />
-            <p class="wc-invoice-description"><?php esc_html_e('Prefix for invoice numbers (e.g., INV-, FA-, INVOICE-).', 'wc-invoice'); ?></p>
-        </div>
+        $fields = $this->framework->getFields($tab_id);
+        $renderer = new Render($options, $option_name);
 
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Title', 'wc-invoice'); ?>
-            </label>
-            <input type="text" 
-                   name="wc_invoice_settings[title]" 
-                   value="<?php echo esc_attr($options['title'] ?? ''); ?>" 
-                   class="wc-invoice-input" 
-                   placeholder="<?php esc_attr_e('Invoice', 'wc-invoice'); ?>" />
-            <p class="wc-invoice-description"><?php esc_html_e('Invoice title displayed on the invoice document.', 'wc-invoice'); ?></p>
-        </div>
+        // Allow modification of fields before rendering
+        $fields = apply_filters('wc_invoice_settings_fields', $fields, $tab_id);
 
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Logo', 'wc-invoice'); ?>
-            </label>
-            <div class="wc-invoice-logo-upload">
-                <?php
-                $logo_id = $options['logo_id'] ?? 0;
-                $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
-                ?>
-                <div class="wc-invoice-logo-preview" style="<?php echo $logo_url ? '' : 'display: none;'; ?>">
-                    <img src="<?php echo esc_url($logo_url); ?>" alt="<?php esc_attr_e('Logo', 'wc-invoice'); ?>" style="max-width: 200px; max-height: 100px; margin-bottom: 10px;" />
-                    <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-remove-logo" style="margin-left: 10px;">
-                        <?php esc_html_e('Remove Logo', 'wc-invoice'); ?>
-                    </button>
-                </div>
-                <input type="hidden" name="wc_invoice_settings[logo_id]" id="wc_invoice_logo_id" value="<?php echo esc_attr($logo_id); ?>" />
-                <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-upload-logo">
-                    <span class="wc-invoice-btn-icon">📷</span>
-                    <?php esc_html_e('Upload Logo', 'wc-invoice'); ?>
-                </button>
-            </div>
-            <p class="wc-invoice-description"><?php esc_html_e('Upload your company logo to display on invoices.', 'wc-invoice'); ?></p>
-        </div>
+        // Allow modification before rendering tab
+        do_action('wc_invoice_settings_tab_before_render', $tab_id, $fields, $options);
 
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Signature', 'wc-invoice'); ?>
-            </label>
-            <div class="wc-invoice-signature-upload">
-                <?php
-                $signature_id = $options['signature_id'] ?? 0;
-                $signature_url = $signature_id ? wp_get_attachment_image_url($signature_id, 'full') : '';
-                ?>
-                <div class="wc-invoice-signature-preview" style="<?php echo $signature_url ? '' : 'display: none;'; ?>">
-                    <img src="<?php echo esc_url($signature_url); ?>" alt="<?php esc_attr_e('Signature', 'wc-invoice'); ?>" style="max-width: 200px; max-height: 100px; margin-bottom: 10px;" />
-                    <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-remove-signature" style="margin-left: 10px;">
-                        <?php esc_html_e('Remove Signature', 'wc-invoice'); ?>
-                    </button>
-                </div>
-                <input type="hidden" name="wc_invoice_settings[signature_id]" id="wc_invoice_signature_id" value="<?php echo esc_attr($signature_id); ?>" />
-                <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-upload-signature">
-                    <span class="wc-invoice-btn-icon">✍️</span>
-                    <?php esc_html_e('Upload Signature', 'wc-invoice'); ?>
-                </button>
-            </div>
-            <p class="wc-invoice-description"><?php esc_html_e('Upload signature image to display on invoices.', 'wc-invoice'); ?></p>
-        </div>
+        foreach ($fields as $field) {
+            $renderer->render($field);
+        }
 
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Address', 'wc-invoice'); ?>
-            </label>
-            <?php
-            // Get WooCommerce store address as default
-            $woocommerce_address = '';
-            if (class_exists('WooCommerce') && function_exists('WC')) {
-                $countries = WC()->countries;
-                if ($countries) {
-                    $woocommerce_address = $countries->get_formatted_address([
-                        'address_1' => $countries->get_base_address(),
-                        'address_2' => $countries->get_base_address_2(),
-                        'city' => $countries->get_base_city(),
-                        'state' => $countries->get_base_state(),
-                        'postcode' => $countries->get_base_postcode(),
-                        'country' => $countries->get_base_country(),
-                    ], "\n");
-                }
-            }
-            
-            // Use saved address or WooCommerce address as default
-            $address = !empty($options['address']) ? $options['address'] : $woocommerce_address;
-            ?>
-            <textarea name="wc_invoice_settings[address]" 
-                      class="wc-invoice-textarea" 
-                      rows="4" 
-                      placeholder="<?php esc_attr_e('Enter your business address', 'wc-invoice'); ?>"><?php echo esc_textarea($address); ?></textarea>
-            <p class="wc-invoice-description"><?php esc_html_e('Business address displayed on invoices. Default value is taken from WooCommerce store settings and can be edited here without affecting WooCommerce settings.', 'wc-invoice'); ?></p>
-        </div>
-
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Date Format', 'wc-invoice'); ?>
-            </label>
-            <select name="wc_invoice_settings[date_format]" class="wc-invoice-select">
-                <?php
-                $date_formats = [
-                    'd/m/Y' => date('d/m/Y') . ' (d/m/Y)',
-                    'm/d/Y' => date('m/d/Y') . ' (m/d/Y)',
-                    'Y-m-d' => date('Y-m-d') . ' (Y-m-d)',
-                    'F j, Y' => date('F j, Y') . ' (F j, Y)',
-                    'j F Y' => date('j F Y') . ' (j F Y)',
-                    'd M Y' => date('d M Y') . ' (d M Y)',
-                ];
-                $selected_format = $options['date_format'] ?? 'd/m/Y';
-                foreach ($date_formats as $format => $label):
-                ?>
-                    <option value="<?php echo esc_attr($format); ?>" <?php selected($selected_format, $format); ?>>
-                        <?php echo esc_html($label); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <p class="wc-invoice-description"><?php esc_html_e('Choose how dates are displayed on invoices.', 'wc-invoice'); ?></p>
-        </div>
-
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Fields', 'wc-invoice'); ?>
-            </label>
-            <p class="wc-invoice-description" style="margin-bottom: 15px;"><?php esc_html_e('Select which fields to display on invoices.', 'wc-invoice'); ?></p>
-            
-            <div class="wc-invoice-fields-list">
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('First Name', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer first name on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_first_name]" 
-                               value="1" 
-                               <?php checked($options['show_field_first_name'] ?? true, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Last Name', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer last name on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_last_name]" 
-                               value="1" 
-                               <?php checked($options['show_field_last_name'] ?? true, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Address', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer address on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_address]" 
-                               value="1" 
-                               <?php checked($options['show_field_address'] ?? true, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Email', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer email on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_email]" 
-                               value="1" 
-                               <?php checked($options['show_field_email'] ?? true, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Phone', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer phone number on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_phone]" 
-                               value="1" 
-                               <?php checked($options['show_field_phone'] ?? true, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Payment Method', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display payment method on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_payment_method]" 
-                               value="1" 
-                               <?php checked($options['show_field_payment_method'] ?? true, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Transaction ID', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display transaction ID on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_transaction_id]" 
-                               value="1" 
-                               <?php checked($options['show_field_transaction_id'] ?? false, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Customer Note', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display customer note on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_customer_note]" 
-                               value="1" 
-                               <?php checked($options['show_field_customer_note'] ?? false, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-
-                <div class="wc-invoice-field-item">
-                    <div class="wc-invoice-field-info">
-                        <span class="wc-invoice-field-label"><?php esc_html_e('Order Note', 'wc-invoice'); ?></span>
-                        <span class="wc-invoice-field-description"><?php esc_html_e('Display order notes on invoice', 'wc-invoice'); ?></span>
-                    </div>
-                    <label class="wc-invoice-switch">
-                        <input type="checkbox" 
-                               name="wc_invoice_settings[show_field_order_note]" 
-                               value="1" 
-                               <?php checked($options['show_field_order_note'] ?? false, true); ?> />
-                        <span class="wc-invoice-switch-slider"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
-        <?php
+        // Allow modification after rendering tab
+        do_action('wc_invoice_settings_tab_after_render', $tab_id, $fields, $options);
     }
-
-    /**
-     * Render theme settings
-     *
-     * @return void
-     */
-    private function renderThemeSettings(): void
-    {
-        $options = get_option('wc_invoice_settings', []);
-        ?>
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Select Theme', 'wc-invoice'); ?>
-            </label>
-            <select name="wc_invoice_settings[theme]" class="wc-invoice-select" id="wc_invoice_theme_select">
-                <option value="modern" <?php selected($options['theme'] ?? 'modern', 'modern'); ?>>
-                    <?php esc_html_e('Modern', 'wc-invoice'); ?>
-                </option>
-                <option value="flat" <?php selected($options['theme'] ?? 'modern', 'flat'); ?>>
-                    <?php esc_html_e('Flat', 'wc-invoice'); ?>
-                </option>
-                <option value="simple" <?php selected($options['theme'] ?? 'modern', 'simple'); ?>>
-                    <?php esc_html_e('Simple', 'wc-invoice'); ?>
-                </option>
-                <option value="classic" <?php selected($options['theme'] ?? 'modern', 'classic'); ?>>
-                    <?php esc_html_e('Classic', 'wc-invoice'); ?>
-                </option>
-            </select>
-            <p class="wc-invoice-description"><?php esc_html_e('Choose the theme style for your invoices.', 'wc-invoice'); ?></p>
-        </div>
-
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Primary Color', 'wc-invoice'); ?>
-            </label>
-            <div class="wc-invoice-color-picker-wrapper">
-                <input type="color" 
-                       name="wc_invoice_settings[primary_color]" 
-                       id="wc_invoice_primary_color" 
-                       value="<?php echo esc_attr($options['primary_color'] ?? '#667eea'); ?>" 
-                       class="wc-invoice-color-picker" />
-                <input type="text" 
-                       id="wc_invoice_primary_color_value" 
-                       value="<?php echo esc_attr($options['primary_color'] ?? '#667eea'); ?>" 
-                       class="wc-invoice-color-value" 
-                       readonly />
-            </div>
-            <p class="wc-invoice-description"><?php esc_html_e('Primary color used in the invoice theme.', 'wc-invoice'); ?></p>
-        </div>
-
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Text Color', 'wc-invoice'); ?>
-            </label>
-            <div class="wc-invoice-color-picker-wrapper">
-                <input type="color" 
-                       name="wc_invoice_settings[text_color]" 
-                       id="wc_invoice_text_color" 
-                       value="<?php echo esc_attr($options['text_color'] ?? '#2d3748'); ?>" 
-                       class="wc-invoice-color-picker" />
-                <input type="text" 
-                       id="wc_invoice_text_color_value" 
-                       value="<?php echo esc_attr($options['text_color'] ?? '#2d3748'); ?>" 
-                       class="wc-invoice-color-value" 
-                       readonly />
-            </div>
-            <p class="wc-invoice-description"><?php esc_html_e('Main text color for invoice content.', 'wc-invoice'); ?></p>
-        </div>
-
-        <div class="wc-invoice-form-group">
-            <label class="wc-invoice-label">
-                <?php esc_html_e('Font Family', 'wc-invoice'); ?>
-            </label>
-            <p class="wc-invoice-description" style="margin-bottom: 15px;"><?php esc_html_e('Upload custom font files for your invoices. Supported formats: TTF, WOFF, WOFF2, EOT, SVG', 'wc-invoice'); ?></p>
-            
-            <div class="wc-invoice-font-uploads">
-                <div class="wc-invoice-font-upload-item">
-                    <label class="wc-invoice-label-small"><?php esc_html_e('TTF', 'wc-invoice'); ?></label>
-                    <?php $this->renderFontUpload('ttf', $options); ?>
-                </div>
-                
-                <div class="wc-invoice-font-upload-item">
-                    <label class="wc-invoice-label-small"><?php esc_html_e('WOFF', 'wc-invoice'); ?></label>
-                    <?php $this->renderFontUpload('woff', $options); ?>
-                </div>
-                
-                <div class="wc-invoice-font-upload-item">
-                    <label class="wc-invoice-label-small"><?php esc_html_e('WOFF2', 'wc-invoice'); ?></label>
-                    <?php $this->renderFontUpload('woff2', $options); ?>
-                </div>
-                
-                <div class="wc-invoice-font-upload-item">
-                    <label class="wc-invoice-label-small"><?php esc_html_e('EOT', 'wc-invoice'); ?></label>
-                    <?php $this->renderFontUpload('eot', $options); ?>
-                </div>
-                
-                <div class="wc-invoice-font-upload-item">
-                    <label class="wc-invoice-label-small"><?php esc_html_e('SVG', 'wc-invoice'); ?></label>
-                    <?php $this->renderFontUpload('svg', $options); ?>
-                </div>
-            </div>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render font upload field
-     *
-     * @param string $format Font format (ttf, woff, woff2, eot, svg)
-     * @param array $options Settings options
-     * @return void
-     */
-    private function renderFontUpload(string $format, array $options): void
-    {
-        $font_id = $options['font_' . $format . '_id'] ?? 0;
-        $font_url = $font_id ? wp_get_attachment_url($font_id) : '';
-        ?>
-        <div class="wc-invoice-font-upload-wrapper">
-            <?php if ($font_url): ?>
-                <div class="wc-invoice-font-preview">
-                    <span class="wc-invoice-font-name"><?php echo esc_html(basename($font_url)); ?></span>
-                    <button type="button" class="wc-invoice-btn-remove-font" data-format="<?php echo esc_attr($format); ?>">
-                        <?php esc_html_e('Remove', 'wc-invoice'); ?>
-                    </button>
-                </div>
-            <?php endif; ?>
-            <input type="hidden" name="wc_invoice_settings[font_<?php echo esc_attr($format); ?>_id]" 
-                   id="wc_invoice_font_<?php echo esc_attr($format); ?>_id" 
-                   value="<?php echo esc_attr($font_id); ?>" />
-            <button type="button" class="wc-invoice-btn wc-invoice-btn-secondary wc-invoice-upload-font" 
-                    data-format="<?php echo esc_attr($format); ?>"
-                    data-accept="<?php echo esc_attr('.' . $format); ?>">
-                <span class="wc-invoice-btn-icon">📁</span>
-                <?php echo esc_html(sprintf(__('Upload %s', 'wc-invoice'), strtoupper($format))); ?>
-            </button>
-        </div>
-        <?php
-    }
-
 }
-

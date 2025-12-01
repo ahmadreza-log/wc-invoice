@@ -27,7 +27,7 @@ Thumbs.db
 
 # Dependencies
 node_modules/
-vendor/
+scripts/
 composer.lock
 package-lock.json
 yarn.lock

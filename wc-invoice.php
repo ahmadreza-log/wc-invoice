@@ -23,7 +23,6 @@ if (!defined('ABSPATH')) {
 
 use WC_Invoice\Admin;
 use WC_Invoice\Ajax;
-use WC_Invoice\Addon_Manager;
 use WC_Invoice\Database;
 use WC_Invoice\Enqueue;
 use WC_Invoice\Frontend;
@@ -144,7 +143,6 @@ class WC_Invoice
         if (is_admin()) {
             Admin::instance();
             Notices::instance();
-            Addon_Manager::instance();
         }
 
         Enqueue::instance();
