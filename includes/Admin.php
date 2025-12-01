@@ -136,11 +136,8 @@ class Admin
                 </aside>
 
                 <main class="wc-invoice-main-content">
-                    <form method="post" action="options.php" class="wc-invoice-settings-form">
+                    <form method="post" class="wc-invoice-settings-form" id="wc-invoice-settings-form">
                         <?php
-                        settings_fields($this->framework->getOptionGroup());
-                        wp_nonce_field('wc_invoice_settings', 'wc_invoice_settings_nonce');
-                        
                         // Allow modification of form before fields
                         do_action('wc_invoice_settings_form_before_fields', $active_tab);
                         ?>

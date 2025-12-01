@@ -126,19 +126,25 @@ class Framework
                     continue;
                 }
 
+                // Check if field exists in input (even if value is empty string or '0')
+                $value_exists = array_key_exists($field_name, $input);
                 $value = $input[$field_name] ?? null;
                 
                 // Allow modification of value before sanitization
                 $value = apply_filters('wc_invoice_settings_field_value_before_sanitize', $value, $field, $field_name);
                 
-                if ($value !== null) {
+                // If field exists in input (even with empty/0 value), always process it
+                // This ensures removed values (like logo_id = '0') are saved
+                if ($value_exists) {
+                    $sanitized[$field_name] = $this->sanitizeField($value, $field);
+                } elseif ($value !== null && $value !== '') {
+                    // Field has a non-empty value, sanitize it
                     $sanitized[$field_name] = $this->sanitizeField($value, $field);
                 } else {
-                    // Handle default values
+                    // Field not in input, only set default if specified
+                    // Otherwise it will keep current value from merge
                     if (isset($field['default'])) {
                         $sanitized[$field_name] = $field['default'];
-                    } elseif ($field_type === 'switch' || $field_type === 'checkbox') {
-                        $sanitized[$field_name] = false;
                     }
                 }
 
@@ -211,7 +217,13 @@ class Framework
                 return sanitize_textarea_field($value);
             
             case 'number':
+                return absint($value);
+            
             case 'media':
+                // Allow 0 for media removal
+                if ($value === '' || $value === null || $value === false) {
+                    return 0;
+                }
                 return absint($value);
             
             case 'color':

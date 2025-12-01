@@ -312,7 +312,7 @@ class Render
             <?php endif; ?>
             <div class="wc-invoice-<?php echo esc_attr($id); ?>-upload">
                 <?php if ($media_url): ?>
-                    <div class="wc-invoice-<?php echo esc_attr($id); ?>-preview <?php echo esc_attr($preview_class); ?>" style="display: block;">
+                    <div class="wc-invoice-<?php echo esc_attr($id); ?>-preview <?php echo esc_attr($preview_class); ?>" style="display: flex;">
                         <img src="<?php echo esc_url($media_url); ?>" 
                              alt="<?php echo esc_attr($label); ?>" 
                              style="max-width: 200px; max-height: 100px; margin-bottom: 10px;" />

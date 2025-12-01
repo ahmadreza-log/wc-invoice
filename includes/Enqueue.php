@@ -100,14 +100,18 @@ class Enqueue
         wp_enqueue_script(
             'wc-invoice-admin',
             WC_INVOICE_URL . 'assets/js/admin.js',
-            ['jquery'],
+            ['jquery', 'wp-i18n'],
             WC_INVOICE_VERSION,
             true
         );
+        
+        // Set script translations
+        wp_set_script_translations('wc-invoice-admin', 'wc-invoice', WC_INVOICE_DIR . 'languages');
 
         wp_localize_script('wc-invoice-admin', 'wcInvoice', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wc_invoice_nonce'),
+            'settingsNonce' => wp_create_nonce('wc_invoice_settings'),
         ]);
     }
 
