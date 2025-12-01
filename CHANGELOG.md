@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## [Unreleased]
 
+## [0.0.18] - 2025-12-01
+
+### Changed
+- 🔢 Auto-bumped version to 0.0.18
+
+
+## [Unreleased]
+## [Unreleased]
+
+## [0.0.18] - 2025-12-01
+
+### Changed
+- 🔢 Auto-bumped version to 0.0.18
+
+
+
 ## [0.0.17] - 2025-12-01
 
 ### Changed
@@ -16,6 +32,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ## [Unreleased]
+
+## [0.0.18] - 2025-12-01
+
+### Changed
+- 🔢 Auto-bumped version to 0.0.18
+
+
+## [Unreleased]
+## [Unreleased]
+
+## [0.0.18] - 2025-12-01
+
+### Changed
+- 🔢 Auto-bumped version to 0.0.18
+
+
 
 ## [0.0.17] - 2025-12-01
 
